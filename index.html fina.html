@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Speaker Water Cleaner</title>
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e3a8a);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+color:white;
+}
+
+/* card layout */
+
+.card{
+background:#111827;
+padding:40px;
+border-radius:18px;
+width:360px;
+text-align:center;
+box-shadow:0 25px 50px rgba(0,0,0,0.5);
+}
+
+h1{
+margin-top:0;
+}
+
+.instructions{
+font-size:14px;
+opacity:0.8;
+margin-bottom:20px;
+}
+
+/* speaker */
+
+.speaker{
+font-size:85px;
+margin:30px 0;
+position:relative;
+transition:0.3s;
+}
+
+/* glow effect */
+
+.glow{
+text-shadow:0 0 15px #22c55e,
+0 0 35px #22c55e,
+0 0 60px #22c55e;
+}
+
+/* vibration */
+
+.vibrate{
+animation:vibrate 0.15s infinite;
+}
+
+@keyframes vibrate{
+0%{transform:translate(0)}
+25%{transform:translate(3px,-3px)}
+50%{transform:translate(-3px,3px)}
+75%{transform:translate(3px,3px)}
+100%{transform:translate(0)}
+}
+
+/* sound waves */
+
+.wave{
+position:absolute;
+top:30px;
+left:65px;
+width:80px;
+height:80px;
+border:3px solid #22c55e;
+border-radius:50%;
+opacity:0;
+}
+
+.wave.active{
+animation:wave 1.5s infinite;
+}
+
+@keyframes wave{
+0%{transform:scale(0.3);opacity:1}
+100%{transform:scale(1.9);opacity:0}
+}
+
+/* pulse effect */
+
+.pulse{
+position:absolute;
+top:30px;
+left:65px;
+width:80px;
+height:80px;
+border-radius:50%;
+background:rgba(34,197,94,0.2);
+opacity:0;
+}
+
+.pulse.active{
+animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(0.6);opacity:1}
+100%{transform:scale(2);opacity:0}
+}
+
+/* button */
+
+button{
+padding:14px 36px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+cursor:pointer;
+transition:0.25s;
+}
+
+button:hover{
+transform:scale(1.06);
+}
+
+button:active{
+transform:scale(0.95);
+}
+
+/* timer */
+
+select{
+padding:8px;
+border-radius:6px;
+border:none;
+margin-bottom:18px;
+}
+
+.status{
+margin-top:15px;
+font-size:14px;
+opacity:0.85;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Speaker Cleaner</h1>
+
+<div class="instructions">
+Turn volume to MAX • Speaker facing down • Press Start
+</div>
+
+<div id="speaker" class="speaker">
+🔊
+<div id="wave" class="wave"></div>
+<div id="pulse" class="pulse"></div>
+</div>
+
+<select id="time">
+<option value="30">30 Seconds</option>
+<option value="60">60 Seconds</option>
+<option value="120">120 Seconds</option>
+</select>
+
+<br>
+
+<button id="controlBtn" onclick="toggleCleaning()">Start</button>
+
+<div id="status" class="status"></div>
+
+</div>
+
+<script>
+
+let audioCtx
+let oscillator
+let isRunning=false
+let timer
+
+function toggleCleaning(){
+
+if(!isRunning){
+
+let duration=document.getElementById("time").value*1000
+
+audioCtx=new(window.AudioContext||window.webkitAudioContext)()
+
+oscillator=audioCtx.createOscillator()
+
+oscillator.type="sine"
+oscillator.frequency.setValueAtTime(165,audioCtx.currentTime)
+
+oscillator.connect(audioCtx.destination)
+
+oscillator.start()
+
+document.getElementById("controlBtn").innerText="Stop"
+document.getElementById("controlBtn").style.background="#ef4444"
+
+document.getElementById("speaker").classList.add("vibrate","glow")
+
+document.getElementById("wave").classList.add("active")
+document.getElementById("pulse").classList.add("active")
+
+document.getElementById("status").innerText="Cleaning in progress..."
+
+isRunning=true
+
+timer=setTimeout(stopCleaning,duration)
+
+}else{
+
+stopCleaning()
+
+}
+
+}
+
+function stopCleaning(){
+
+if(oscillator){
+oscillator.stop()
+}
+
+clearTimeout(timer)
+
+document.getElementById("controlBtn").innerText="Start"
+document.getElementById("controlBtn").style.background="#22c55e"
+
+document.getElementById("speaker").classList.remove("vibrate","glow")
+
+document.getElementById("wave").classList.remove("active")
+document.getElementById("pulse").classList.remove("active")
+
+document.getElementById("status").innerText="Stopped"
+
+isRunning=false
+
+}
+
+</script>
+
+</body>
+</html>
